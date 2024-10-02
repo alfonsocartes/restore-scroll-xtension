@@ -102,18 +102,16 @@ function scrollToSavedTweet() {
 
   let foundTweet = false;
   let scrollAttempts = 0;
-  const maxScrollAttempts = 100;
+  const maxScrollAttempts = 1000;
 
   function smoothScroll(distance, duration) {
     const start = window.pageYOffset;
-    const startTime =
-      "now" in window.performance ? performance.now() : new Date().getTime();
+    const startTime = performance.now();
 
     function scroll() {
       if (!isScrolling) return;
 
-      const currentTime =
-        "now" in window.performance ? performance.now() : new Date().getTime();
+      const currentTime = performance.now();
       const timeElapsed = currentTime - startTime;
       const progress = Math.min(timeElapsed / duration, 1);
 
@@ -136,7 +134,7 @@ function scrollToSavedTweet() {
     for (const tweet of tweets) {
       const tweetId = extractTweetId(tweet);
       if (tweetId === savedTweetId) {
-        tweet.scrollIntoView({ behavior: "smooth", block: "center" });
+        tweet.scrollIntoView({ block: "center" });
         foundTweet = true;
         isScrolling = false;
         document.getElementById("floating-scroll-button").style.display =
@@ -149,7 +147,7 @@ function scrollToSavedTweet() {
 
     if (!foundTweet && scrollAttempts < maxScrollAttempts) {
       scrollAttempts++;
-      smoothScroll(1000, 500); // Scroll 1000px over 500ms
+      smoothScroll(2000, 300); // Scroll 2000px over 300ms
     } else {
       isScrolling = false;
       document.getElementById("floating-scroll-button").style.display = "block";
@@ -174,7 +172,7 @@ let lastScrollPosition = 0;
 let lastSavedTweetId = localStorage.getItem("lastSavedTweet");
 
 function handleScroll() {
-  if (!isOnXcom()) return;
+  if (!isOnXcom() || !isInFollowingTab()) return;
 
   const currentScrollPosition = window.scrollY;
   if (currentScrollPosition < lastScrollPosition) {
@@ -200,10 +198,10 @@ function handleScroll() {
               const timeDifference =
                 (newTweetTime - new Date(lastSavedTime)) / (1000 * 60 * 60); // difference in hours
 
-              if (timeDifference > 1) {
+              if (timeDifference > 24) {
                 if (
                   confirm(
-                    "The new tweet is more than 1 hour newer than the last saved tweet. Do you want to save it?"
+                    "The new tweet is more than 24 hours newer than the last saved tweet. Do you want to save it?"
                   )
                 ) {
                   saveTweet(tweetId, lastVisibleTweet, newTweetTime);
@@ -254,3 +252,10 @@ lastScrollPosition = window.scrollY;
 
 // Add scroll event listener
 window.addEventListener("scroll", handleScroll);
+
+function isInFollowingTab() {
+  const followingTab = document.querySelector(
+    'a[role="tab"][aria-selected="true"] span'
+  );
+  return followingTab && followingTab.textContent.trim() === "Following";
+}
