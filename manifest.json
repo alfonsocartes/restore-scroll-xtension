@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "X.com Scroll Saver",
+  "version": "1.0",
+  "description": "Saves your position in the timeline and helps you return to the last tweet.",
+  "permissions": ["activeTab", "scripting"],
+  "content_scripts": [
+    {
+      "matches": ["*://x.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "icons": {
+    "48": "icon.png"
+  }
+}

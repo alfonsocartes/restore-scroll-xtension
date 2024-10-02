@@ -1,0 +1,53 @@
+.tweet-save-button {
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 0 16px;
+  height: 32px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.tweet-save-button:hover {
+  background-color: #1a91da;
+}
+
+#floating-scroll-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#floating-scroll-button:hover {
+  background-color: #1a91da;
+}
+
+#floating-cancel-button {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  z-index: 9999;
+  background-color: #e0245e;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#floating-cancel-button:hover {
+  background-color: #c01e4e;
+}
