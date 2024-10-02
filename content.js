@@ -163,6 +163,58 @@ function scrollToSavedTweet() {
   scrollAndCheck();
 }
 
+function isOnXcom() {
+  return (
+    window.location.hostname === "x.com" ||
+    window.location.hostname === "twitter.com"
+  );
+}
+
+let lastScrollPosition = 0;
+let lastSavedTweetId = null;
+
+function handleScroll() {
+  if (!isOnXcom()) return;
+
+  const currentScrollPosition = window.scrollY;
+  if (currentScrollPosition < lastScrollPosition) {
+    // Scrolling up
+    const tweets = document.querySelectorAll('article[data-testid="tweet"]');
+    if (tweets.length > 0) {
+      const lastVisibleTweet = Array.from(tweets)
+        .reverse()
+        .find((tweet) => {
+          const rect = tweet.getBoundingClientRect();
+          return rect.top <= window.innerHeight && rect.bottom >= 0;
+        });
+
+      if (lastVisibleTweet) {
+        const tweetId = extractTweetId(lastVisibleTweet);
+        if (tweetId && tweetId !== lastSavedTweetId) {
+          lastSavedTweetId = tweetId;
+          localStorage.setItem("lastSavedTweet", tweetId);
+
+          // Log tweet information
+          const userHandle =
+            lastVisibleTweet.querySelector('div[dir="ltr"] > span')
+              ?.textContent || "Unknown";
+          const timeElement = lastVisibleTweet.querySelector("time");
+          const tweetTime = timeElement
+            ? new Date(timeElement.dateTime).toLocaleString()
+            : "Unknown";
+          console.log(
+            `New tweet saved: ID: ${tweetId}, User: ${userHandle}, Time: ${tweetTime}`
+          );
+        }
+      }
+    }
+  }
+  lastScrollPosition = currentScrollPosition;
+}
+
+// Add event listener for scroll
+window.addEventListener("scroll", handleScroll);
+
 // Run the function initially
 addSaveButtons();
 
@@ -172,3 +224,9 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 // Add this line at the end of the file, after the MutationObserver setup
 createFloatingButtons();
+
+// Initialize last scroll position
+lastScrollPosition = window.scrollY;
+
+// Add scroll event listener
+window.addEventListener("scroll", handleScroll);
