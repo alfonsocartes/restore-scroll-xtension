@@ -171,7 +171,7 @@ function isOnXcom() {
 }
 
 let lastScrollPosition = 0;
-let lastSavedTweetId = null;
+let lastSavedTweetId = localStorage.getItem("lastSavedTweet");
 
 function handleScroll() {
   if (!isOnXcom()) return;
@@ -191,25 +191,49 @@ function handleScroll() {
       if (lastVisibleTweet) {
         const tweetId = extractTweetId(lastVisibleTweet);
         if (tweetId && tweetId !== lastSavedTweetId) {
-          lastSavedTweetId = tweetId;
-          localStorage.setItem("lastSavedTweet", tweetId);
-
-          // Log tweet information
-          const userHandle =
-            lastVisibleTweet.querySelector('div[dir="ltr"] > span')
-              ?.textContent || "Unknown";
           const timeElement = lastVisibleTweet.querySelector("time");
-          const tweetTime = timeElement
-            ? new Date(timeElement.dateTime).toLocaleString()
-            : "Unknown";
-          console.log(
-            `New tweet saved: ID: ${tweetId}, User: ${userHandle}, Time: ${tweetTime}`
-          );
+          if (timeElement) {
+            const newTweetTime = new Date(timeElement.dateTime);
+            const lastSavedTime = localStorage.getItem("lastSavedTweetTime");
+
+            if (lastSavedTime) {
+              const timeDifference =
+                (newTweetTime - new Date(lastSavedTime)) / (1000 * 60 * 60); // difference in hours
+
+              if (timeDifference > 1) {
+                if (
+                  confirm(
+                    "The new tweet is more than 1 hour newer than the last saved tweet. Do you want to save it?"
+                  )
+                ) {
+                  saveTweet(tweetId, lastVisibleTweet, newTweetTime);
+                }
+              } else {
+                saveTweet(tweetId, lastVisibleTweet, newTweetTime);
+              }
+            } else {
+              saveTweet(tweetId, lastVisibleTweet, newTweetTime);
+            }
+          }
         }
       }
     }
   }
   lastScrollPosition = currentScrollPosition;
+}
+
+function saveTweet(tweetId, tweetElement, tweetTime) {
+  lastSavedTweetId = tweetId;
+  localStorage.setItem("lastSavedTweet", tweetId);
+  localStorage.setItem("lastSavedTweetTime", tweetTime.toISOString());
+
+  // Log tweet information
+  const userHandle =
+    tweetElement.querySelector('div[dir="ltr"] > span')?.textContent ||
+    "Unknown";
+  console.log(
+    `New tweet saved: ID: ${tweetId}, User: ${userHandle}, Time: ${tweetTime.toLocaleString()}`
+  );
 }
 
 // Add event listener for scroll
