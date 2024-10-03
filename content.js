@@ -187,30 +187,37 @@ function handleScroll() {
         });
 
       if (lastVisibleTweet) {
-        const tweetId = extractTweetId(lastVisibleTweet);
-        if (tweetId && tweetId !== lastSavedTweetId) {
-          const timeElement = lastVisibleTweet.querySelector("time");
-          if (timeElement) {
-            const newTweetTime = new Date(timeElement.dateTime);
-            const lastSavedTime = localStorage.getItem("lastSavedTweetTime");
+        // Check if the tweet is a retweet
+        const isRetweet =
+          lastVisibleTweet.querySelector('[data-testid="socialContext"]') !==
+          null;
 
-            if (lastSavedTime) {
-              const timeDifference =
-                (newTweetTime - new Date(lastSavedTime)) / (1000 * 60 * 60); // difference in hours
+        if (!isRetweet) {
+          const tweetId = extractTweetId(lastVisibleTweet);
+          if (tweetId && tweetId !== lastSavedTweetId) {
+            const timeElement = lastVisibleTweet.querySelector("time");
+            if (timeElement) {
+              const newTweetTime = new Date(timeElement.dateTime);
+              const lastSavedTime = localStorage.getItem("lastSavedTweetTime");
 
-              if (timeDifference > 24) {
-                if (
-                  confirm(
-                    "The new tweet is more than 24 hours newer than the last saved tweet. Do you want to save it?"
-                  )
-                ) {
+              if (lastSavedTime) {
+                const timeDifference =
+                  (newTweetTime - new Date(lastSavedTime)) / (1000 * 60 * 60); // difference in hours
+
+                if (timeDifference > 24) {
+                  if (
+                    confirm(
+                      "The new tweet is more than 24 hours newer than the last saved tweet. Do you want to save it?"
+                    )
+                  ) {
+                    saveTweet(tweetId, lastVisibleTweet, newTweetTime);
+                  }
+                } else {
                   saveTweet(tweetId, lastVisibleTweet, newTweetTime);
                 }
               } else {
                 saveTweet(tweetId, lastVisibleTweet, newTweetTime);
               }
-            } else {
-              saveTweet(tweetId, lastVisibleTweet, newTweetTime);
             }
           }
         }
