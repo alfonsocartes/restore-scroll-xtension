@@ -204,10 +204,10 @@ function handleScroll() {
                 const timeDifference =
                   (newTweetTime - new Date(lastSavedTime)) / (1000 * 60 * 60); // difference in hours
 
-                if (timeDifference > 24) {
+                if (timeDifference > 36) {
                   if (
                     confirm(
-                      "The new tweet is more than 24 hours newer than the last saved tweet. Do you want to save it?"
+                      "The new tweet is more than 36 hours newer than the last saved tweet. Do you want to save it?"
                     )
                   ) {
                     saveTweet(tweetId, lastVisibleTweet, newTweetTime);
