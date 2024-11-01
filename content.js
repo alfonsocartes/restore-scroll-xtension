@@ -147,7 +147,7 @@ function scrollToSavedTweet() {
 
     if (!foundTweet && scrollAttempts < maxScrollAttempts) {
       scrollAttempts++;
-      smoothScroll(2000, 300); // Scroll 2000px over 300ms
+      smoothScroll(4000, 200); // Scroll 4000px over 200ms
     } else {
       isScrolling = false;
       document.getElementById("floating-scroll-button").style.display = "block";
